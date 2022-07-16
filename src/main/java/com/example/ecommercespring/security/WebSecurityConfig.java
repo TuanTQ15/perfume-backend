@@ -80,9 +80,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
         http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-                .antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/api/auth/**","/api-docs/**","/swagger-ui/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/customer/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/customer/", "/api/brand", "/api/product/**",
                         "/api/discount", "/api/hotsell", "/api/newProduct", "/api/category").permitAll()
@@ -108,6 +109,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated();
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
     }
 
     @Bean

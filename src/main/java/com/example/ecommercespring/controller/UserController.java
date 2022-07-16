@@ -28,7 +28,10 @@ public class UserController {
     public ResponseEntity<?> getEmployeeById(@PathVariable Long id){
         return userService.getEmployeeById(id);
     }
-
+    @GetMapping("customer/{id}")
+    public ResponseEntity<?> getCustomerById(@PathVariable Long id){
+        return userService.getCustomerById(id);
+    }
     @PostMapping("/employee")
     public Response PostEmployee(@RequestBody UserDTO userDTO){
         return userService.addNewEmployee(userDTO);

@@ -12,5 +12,6 @@ public interface UserService {
     public Response addNewEmployee(UserDTO userDTO);
     public Response modify(UserDTO userDTO);
     public ResponseEntity<?> getEmployeeById(Long id);
+    public ResponseEntity<?> getCustomerById(Long id);
     public Response deleteEmployee(Long id);
 }

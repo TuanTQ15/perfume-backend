@@ -53,7 +53,7 @@ public class StatisticServiceImpl implements StatisticService {
 
             c.add(Calendar.DATE, 1);
             next = c.getTime();
-//findByDateCreatedBetween
+            //findByDateCreatedBetween
             Integer revenueByDate = invoiceRepository.findByDateCreatedBetweenAndOrderUser_StatusIsLessThanEqual(pre, next, 2).stream()
                     .mapToInt(value -> value.getTotalPrice()).sum();
             revenueList.add(revenueByDate);
@@ -106,7 +106,6 @@ public class StatisticServiceImpl implements StatisticService {
         if (subDate > 30) {
             return ResponseEntity.ok(new Response(false, "Vui lòng chọn khoảng cách ít hơn 30 ngày"));
         }
-        Date dateStart = new Date(dateStartTime);
         List<Long> idProductList = detailOrderRepository
                 .findByOrderUser_BookingDateBetweenAndOrderUser_StatusIsLessThanEqual(new Date(dateStartTime), new Date(dateEndTime), 2)
                 .stream().map(value -> value.getId().getProductId())
@@ -162,7 +161,6 @@ public class StatisticServiceImpl implements StatisticService {
             return ResponseEntity.badRequest().body(new Response(false, "Không thể thống kê thời gian trong tương lai"));
         }
 
-        List<Integer> integerList = new ArrayList<>();
         Calendar cal = Calendar.getInstance();
 
         int month = 1;

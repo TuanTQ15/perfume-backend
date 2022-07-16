@@ -26,7 +26,7 @@ public class Product {
     private Integer quantityInStock;
     private Integer sex;
     private String origin;
-
+    private Long capacity;
 
 
     @ManyToMany
@@ -75,7 +75,7 @@ public class Product {
 
 
     public Product(Long productId, String productName, String description, String image, Integer price,
-                   Integer quantityInStock, Integer sex, String origin) {
+                   Integer quantityInStock, Integer sex, String origin, Long capacity) {
         this.productId = productId;
         this.productName = productName;
         this.description = description;
@@ -84,5 +84,6 @@ public class Product {
         this.quantityInStock = quantityInStock;
         this.sex = sex;
         this.origin = origin;
+        this.capacity = capacity;
     }
 }

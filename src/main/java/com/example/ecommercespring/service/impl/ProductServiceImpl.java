@@ -2,13 +2,11 @@ package com.example.ecommercespring.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.example.ecommercespring.dto.DetailReceiptDTO;
 import com.example.ecommercespring.dto.ProductDTO;
 import com.example.ecommercespring.entity.Brand;
 import com.example.ecommercespring.entity.Category;
 import com.example.ecommercespring.entity.Product;
 import com.example.ecommercespring.repository.BrandRepository;
-import com.example.ecommercespring.repository.CategoryRepository;
 import com.example.ecommercespring.repository.DetailReceiptRepository;
 import com.example.ecommercespring.repository.ProductRepository;
 import com.example.ecommercespring.respone.Response;
@@ -16,10 +14,7 @@ import com.example.ecommercespring.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import javax.xml.bind.SchemaOutputResolver;
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,16 +23,14 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService {
 
     Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
-            "cloud_name", "pnam1609",
-            "api_key", "374845767221635",
-            "api_secret", "9ujinxMeC0YPZCLaEpwSB8QiO1E"));
+            "cloud_name", "ptithcm",
+            "api_key", "649875216812692",
+            "api_secret", "JGU8KM7qbRLHeM86XAT_HG5XQCA"));
 
     @Autowired
     ProductRepository productRepository;
     @Autowired
     BrandRepository brandRepository;
-    @Autowired
-    CategoryRepository categoryRepository;
     @Autowired
     DetailReceiptRepository detailReceiptRepository;
 
@@ -79,6 +72,7 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductDTO> getAllHotSell() {
         return productRepository.findAll().stream()
                 .map(ProductDTO::new)
+                .filter(product -> product.getQuantityInStock() >0)
                 .sorted(Comparator.comparing(ProductDTO::getQuantitySold).reversed())
                 .limit(6)
                 .collect(Collectors.toList());
@@ -111,14 +105,9 @@ public class ProductServiceImpl implements ProductService {
             return new Response(false, "Mã hãng không tồn tại");
         }
 
-        Category category = categoryRepository.findById(productDTO.getCategoryId()).orElse(null);
-        if (category == null) {
-            return new Response(false, "Mã danh mục không tồn tại");
-        }
 
         Product product = productDTO.toEntity();
         product.setBrand(brand);
-        product.setCategory(category);
 
         try {
             Map uploadResult = cloudinary.uploader().upload(productDTO.getImage(), ObjectUtils.emptyMap());
@@ -126,7 +115,7 @@ public class ProductServiceImpl implements ProductService {
         } catch (IOException ex) {
             return new Response(false, "Upload img failed");
         }
-
+        System.out.println(product);
         productRepository.save(product);
         return new Response(true, "Thêm sản phẩm thành công");
     }
@@ -141,12 +130,7 @@ public class ProductServiceImpl implements ProductService {
             product.setBrand(brand);
         }
 
-        if (product.getCategory().getCategoryId() != productDTO.getCategoryId()) {
-            Category category = categoryRepository.findById(productDTO.getBrandId()).orElse(null);
-            if (category == null)
-                return new Response(false, "Danh mục không tồn tại");
-            product.setCategory(category);
-        }
+
         product.setDescription(productDTO.getDescription());
         product.setPrice(productDTO.getPrice());
         product.setProductName(productDTO.getProductName());

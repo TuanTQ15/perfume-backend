@@ -1,10 +1,7 @@
 package com.example.ecommercespring.service.impl;
 
 import com.example.ecommercespring.dto.UserDTO;
-import com.example.ecommercespring.entity.Brand;
-import com.example.ecommercespring.entity.Role;
-import com.example.ecommercespring.entity.Shipper;
-import com.example.ecommercespring.entity.User;
+import com.example.ecommercespring.entity.*;
 import com.example.ecommercespring.repository.UserRepository;
 import com.example.ecommercespring.repository.RoleRepository;
 import com.example.ecommercespring.respone.Response;
@@ -45,9 +42,19 @@ public class UserServiceImpl implements UserService {
         UserDTO userDTO = new UserDTO(user);
         return ResponseEntity.ok(userDTO);
     }
-
+    @Override
+    public ResponseEntity<?> getCustomerById(Long id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null)
+            return ResponseEntity
+                    .badRequest()
+                    .body(new Response(false, "Người dùng không tồn tại"));
+        UserDTO userDTO = new UserDTO(user);
+        return ResponseEntity.ok(userDTO);
+    }
     @Override
     public Response addNewCustomer(UserDTO userDTO) {
+        System.out.println(userDTO);
         if (userDTO.getPhoneNumber() == null || userDTO.getEmail() == null) {
             return new Response(false, "Số điện thoại hoặc email rỗng");
         }
@@ -57,10 +64,11 @@ public class UserServiceImpl implements UserService {
         }
 
         userDTO.setPassword(encoder.encode(userDTO.getPassword()));
-        if (userDTO.getRole().name() != "ROLE_USER") {
+        RoleName roleName= userDTO.getRole();
+        if ( roleName.name()!= "ROLE_USER") {
             return new Response(false, "Wrong role name");
         }
-        Role role = roleRepository.getByName(userDTO.getRole());
+        Role role = roleRepository.getByName(roleName);
         User user = userDTO.toEntity();
         user.setRole(role);
         userRepository.save(user);
@@ -81,16 +89,20 @@ public class UserServiceImpl implements UserService {
             return new Response(false, "Số điện thoại đã tồn tại");
         }
 
-        Optional<Object> checkUser = userRepository.findByEmail(userDTO.getEmail());
+        User checkUser = userRepository.findByEmail(userDTO.getEmail());
+        System.out.println(checkUser);
         if (checkUser != null) {
             return new Response(false, "Email đã tồn tại");
         }
 
         userDTO.setPassword(encoder.encode(userDTO.getPassword()));
-        if (userDTO.getRole().name() != "ROLE_ADMIN") {
+        RoleName roleName= userDTO.getRole();
+        if (roleName.name() != "ROLE_ADMIN") {
             return new Response(false, "Wrong role name");
         }
-        Role role = roleRepository.getByName(userDTO.getRole());
+        System.out.println(roleName);
+        Role role = roleRepository.getByName(roleName);
+        System.out.println(role);
         User user = userDTO.toEntity();
         user.setRole(role);
         userRepository.save(user);
@@ -134,7 +146,7 @@ public class UserServiceImpl implements UserService {
         if (checkUserPN != null) {
             return new Response(false, "Số điện thoại đã tồn tại");
         }
-        Optional<Object> checkUser = userRepository.findByEmail(userDTO.getEmail());
+        User checkUser = userRepository.findByEmail(userDTO.getEmail());
         if (checkUser != null) {
             return new Response(false, "Email đã tồn tại");
         }
@@ -145,6 +157,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDTO.getEmail());
         user.setPassword(userDTO.getPassword());
         user.setFullName(userDTO.getFullName());
+
         userRepository.save(user);
         return new Response(true, "Sửa thông tin thành công");
     }

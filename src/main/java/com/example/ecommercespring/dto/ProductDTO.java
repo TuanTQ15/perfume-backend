@@ -26,17 +26,16 @@ public class ProductDTO {
     private Integer price;
     private Integer quantityInStock;
     private Long brandId;
-    private Long categoryId;
     private Integer sex;
     private String origin;
 
     private BrandDTO brand;
-    private CategoryDTO category;
-    //    private List<DetailPromotionDTO> detailPromotionList = new ArrayList<>();
+
     private DetailPromotionDTO detailPromotion;
 
     private Integer quantitySold;
 
+    private Long capacity;
     public ProductDTO(Product product) {
         this.productId = product.getProductId();
         this.productName = product.getProductName();
@@ -47,10 +46,10 @@ public class ProductDTO {
         this.sex = product.getSex();
         this.origin = product.getOrigin();
         this.brandId = product.getBrand().getBrandId();
-        this.categoryId = product.getCategory().getCategoryId();
+        this.capacity = product.getCapacity();
+
         this.brand = new BrandDTO(product.getBrand().getBrandId(), product.getBrand().getBrandName(), product.getBrand().getEmail(),
                 product.getBrand().getPhoneNumber(), product.getBrand().getAddress());
-        this.category = new CategoryDTO(product.getCategory().getCategoryId(), product.getCategory().getCategoryName());
 //        this.detailPromotionList = product.getDetailPromotionList().stream().map(DetailPromotionDTO::new).collect(Collectors.toList());
         this.detailPromotion = product.getDetailPromotionList().stream()
                 .filter(detailPromotion -> {
@@ -73,7 +72,7 @@ public class ProductDTO {
 
     public Product toEntity() {
         return new Product(this.productId, this.productName, this.description,
-                this.image, this.price, this.quantityInStock,this.sex,this.origin);
+                this.image, this.price, this.quantityInStock,this.sex,this.origin, this.capacity);
     }
 
 }
