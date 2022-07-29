@@ -3,11 +3,9 @@ package com.example.ecommercespring.service.impl;
 import com.example.ecommercespring.dto.DetailPromotionDTO;
 import com.example.ecommercespring.dto.PromotionDTO;
 import com.example.ecommercespring.entity.*;
+import com.example.ecommercespring.key.DetailOrderKey;
 import com.example.ecommercespring.key.DetailPromotionKey;
-import com.example.ecommercespring.repository.DetailPromotionRepository;
-import com.example.ecommercespring.repository.ProductRepository;
-import com.example.ecommercespring.repository.PromotionRepository;
-import com.example.ecommercespring.repository.UserRepository;
+import com.example.ecommercespring.repository.*;
 import com.example.ecommercespring.respone.Response;
 import com.example.ecommercespring.service.PromotionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +26,8 @@ public class PromotionServiceImpl implements PromotionService {
     ProductRepository productRepository;
     @Autowired
     DetailPromotionRepository detailPromotionRepository;
-
+    @Autowired
+    DetailOrderRepository detailOrderRepository;
     @Override
     public List<PromotionDTO> getAll() {
         return promotionRepository.findAll().stream().map(PromotionDTO::new).collect(Collectors.toList());
@@ -114,5 +113,15 @@ public class PromotionServiceImpl implements PromotionService {
 
         promotionRepository.deleteById(id);
         return new Response(true, "Xóa đợt khuyến mãi thành công");
+    }
+
+    @Override
+    public Response checkForDeleteProductInPromotion(Long productId) {
+        List<DetailOrder> detailOrder =detailOrderRepository.findDetailOrder(productId);
+        if(detailOrder == null){
+            return new Response(true,"Sản phẩm chưa có đơn đặt hàng bạn có thể xóa");
+        }
+
+        return new Response(false, "Sản phẩm  có đơn đặt hàng bạn không thể xóa");
     }
 }

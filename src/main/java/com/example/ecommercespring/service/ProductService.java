@@ -1,6 +1,7 @@
 package com.example.ecommercespring.service;
 
 import com.example.ecommercespring.dto.ProductDTO;
+import com.example.ecommercespring.dto.ProductSearchDTO;
 import com.example.ecommercespring.respone.Response;
 import org.springframework.http.ResponseEntity;
 
@@ -8,6 +9,7 @@ import java.util.List;
 
 public interface ProductService {
     public List<ProductDTO> getAll();
+    public List<ProductSearchDTO> getAllForSelect();
     public List<ProductDTO> getAllDiscount();
     public List<ProductDTO> getAllNewProduct();
     public List<ProductDTO> getAllHotSell();
@@ -16,4 +18,5 @@ public interface ProductService {
     public Response addNew(ProductDTO productDTO);
     public Response modify(ProductDTO productDTO);
     public Response delete(Long id);
+
 }

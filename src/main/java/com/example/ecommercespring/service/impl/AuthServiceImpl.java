@@ -37,12 +37,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> authenticateUser(LoginRequest loginRequest) {
-        // TODO, authenticate when login
-        // Username, pass from client
-        // com.nashtech.rookies.security.WebSecurityConfig.configure(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder)
-        // authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-        // on this step, we tell to authenticationManager how we load data from database
-        // and the password encoder
+
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));

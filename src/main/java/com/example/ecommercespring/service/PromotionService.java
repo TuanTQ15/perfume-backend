@@ -12,4 +12,5 @@ public interface PromotionService {
     public Response addNew(@RequestBody PromotionDTO promotionDTO);
     public Response modify(@RequestBody PromotionDTO promotionDTO);
     public Response delete(Long id);
+    public Response checkForDeleteProductInPromotion(Long productId);
 }

@@ -21,7 +21,7 @@ public class StatisticController {
         return statisticService.getRevenueByDate(dateStart,dateEnd);//dateEnd
     }
 
-    @GetMapping("/revenue/year")
+    @GetMapping("/revenue/month")
     public ResponseEntity<?> getRevenueByYear(@RequestParam("year")Integer year){
         return statisticService.getRevenueByYear(year);
     }
@@ -35,4 +35,5 @@ public class StatisticController {
     public ResponseEntity<?> getProfitByYear(@RequestParam("year")Integer year){
         return statisticService.getProfitByYear(year);
     }
+
 }

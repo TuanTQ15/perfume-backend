@@ -1,7 +1,7 @@
 package com.example.ecommercespring.controller;
 
+import com.example.ecommercespring.dto.DetailOrderDTO;
 import com.example.ecommercespring.dto.PromotionDTO;
-import com.example.ecommercespring.dto.ShipperDTO;
 import com.example.ecommercespring.respone.Response;
 import com.example.ecommercespring.security.services.UserDetailsImpl;
 import com.example.ecommercespring.service.PromotionService;
@@ -23,7 +23,10 @@ public class PromotionController {
     public List<PromotionDTO> Get(){
         return promotionService.getAll();
     }
-
+    @GetMapping("/check_delete/{id}")
+    public Response checkForDeleteDetailPromotion(@PathVariable("id") Long productId){
+        return promotionService.checkForDeleteProductInPromotion(productId);
+    }
     @GetMapping("/{id}")
     public PromotionDTO Get(@PathVariable("id") Long id){
         return promotionService.getById(id);
@@ -44,4 +47,6 @@ public class PromotionController {
     public Response Delete(@PathVariable("id") Long id){
         return promotionService.delete(id);
     }
+
+
 }

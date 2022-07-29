@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Setter
@@ -28,4 +29,6 @@ public class DetailPromotion {
     private Product product;
 
     private Float percentDiscount;
+
+    private Date dateCreated;
 }

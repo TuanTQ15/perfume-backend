@@ -55,14 +55,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public Response addNewCustomer(UserDTO userDTO) {
         System.out.println(userDTO);
-        if (userDTO.getPhoneNumber() == null || userDTO.getEmail() == null) {
-            return new Response(false, "Số điện thoại hoặc email rỗng");
+        if (userDTO.getPhoneNumber() == null ||userDTO.getPhoneNumber().isEmpty()) {
+            return new Response(false, "Số điện thoại không được để trống");
         }
-        User checkUser = userRepository.findByPhoneNumberAndEmail(userDTO.getPhoneNumber(), userDTO.getEmail());
-        if (checkUser != null) {
-            return new Response(false, "Số điện thoại hoặc email đã tồn tại");
+        if (userDTO.getEmail() == null ||userDTO.getEmail().isEmpty()) {
+            return new Response(false, "Email không được để trống");
         }
-
+        User checkUserPhone = userRepository.findByPhoneNumber(userDTO.getPhoneNumber());
+        if (checkUserPhone != null) {
+            return new Response(false, "Số điện thoại đã tồn tại");
+        }
+        User checkUserEmail = userRepository.findByEmail(userDTO.getEmail());
+        if (checkUserEmail != null) {
+            return new Response(false, "Email đã được sử dụng");
+        }
         userDTO.setPassword(encoder.encode(userDTO.getPassword()));
         RoleName roleName= userDTO.getRole();
         if ( roleName.name()!= "ROLE_USER") {
@@ -77,11 +83,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response addNewEmployee(UserDTO userDTO) {
-        if (userDTO.getPhoneNumber() == null || userDTO.getEmail() == null) {
-            return new Response(false, "Số điện thoại hoặc email rỗng");
+        if (userDTO.getPhoneNumber() == null ||userDTO.getPhoneNumber().isEmpty()) {
+            return new Response(false, "Số điện thoại không được để trống");
         }
-        if (userDTO.getPhoneNumber() == null || userDTO.getEmail() == null) {
-            return new Response(false, "Số điện thoại hoặc email rỗng");
+        if (userDTO.getEmail() == null ||userDTO.getEmail().isEmpty()) {
+            return new Response(false, "Email không được để trống");
         }
 
         User checkUserPN = userRepository.findByPhoneNumber(userDTO.getPhoneNumber());

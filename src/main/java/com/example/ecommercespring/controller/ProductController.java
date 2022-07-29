@@ -1,6 +1,7 @@
 package com.example.ecommercespring.controller;
 
 import com.example.ecommercespring.dto.ProductDTO;
+import com.example.ecommercespring.dto.ProductSearchDTO;
 import com.example.ecommercespring.respone.Response;
 import com.example.ecommercespring.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,10 @@ public class ProductController {
     public List<ProductDTO> Get() {
         return productService.getAll();
     }
-
+    @GetMapping("/product/search")
+    public List<ProductSearchDTO> getProductForSearch() {
+        return productService.getAllForSelect();
+    }
     @GetMapping("/product/{id}")
     public ResponseEntity<?> Get(@PathVariable("id") Long id) {
         return productService.getByid(id);

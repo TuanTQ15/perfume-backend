@@ -3,10 +3,12 @@ package com.example.ecommercespring.service.impl;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.ecommercespring.dto.ProductDTO;
+import com.example.ecommercespring.dto.ProductSearchDTO;
 import com.example.ecommercespring.entity.Brand;
-import com.example.ecommercespring.entity.Category;
+
 import com.example.ecommercespring.entity.Product;
 import com.example.ecommercespring.repository.BrandRepository;
+
 import com.example.ecommercespring.repository.DetailReceiptRepository;
 import com.example.ecommercespring.repository.ProductRepository;
 import com.example.ecommercespring.respone.Response;
@@ -41,7 +43,18 @@ public class ProductServiceImpl implements ProductService {
                 .sorted(Comparator.comparing(o -> o.getQuantityInStock()))
                 .collect(Collectors.toList());
     }
-
+    @Override
+    public List<ProductSearchDTO> getAllForSelect() {
+        List<ProductDTO> productDTOList =productRepository.findAll().stream().map(ProductDTO::new)
+                .sorted(Comparator.comparing(o -> o.getQuantityInStock()))
+                .collect(Collectors.toList());
+        List < ProductSearchDTO> productSearchDTOList= new ArrayList<>();
+        for (ProductDTO product :productDTOList) {
+            ProductSearchDTO productSearch = new ProductSearchDTO(product.getProductId(),product.getProductName());
+            productSearchDTOList.add(productSearch);
+        }
+        return productSearchDTOList;
+    }
     @Override
     public List<ProductDTO> getAllDiscount() {
         return productRepository.findAll().stream()
@@ -104,7 +117,9 @@ public class ProductServiceImpl implements ProductService {
         if (brand == null) {
             return new Response(false, "Mã hãng không tồn tại");
         }
-
+        if(productDTO.getDescription().length()>255){
+            return new Response(false, "Mô tả phải dưới 255 ký tự");
+        }
 
         Product product = productDTO.toEntity();
         product.setBrand(brand);

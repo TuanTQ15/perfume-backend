@@ -1,6 +1,7 @@
 package com.example.ecommercespring.service.impl;
 
 import com.example.ecommercespring.dto.AveragePrice;
+import com.example.ecommercespring.dto.DataSet;
 import com.example.ecommercespring.entity.DetailOrder;
 import com.example.ecommercespring.entity.DetailReceipt;
 import com.example.ecommercespring.repository.*;
@@ -26,8 +27,7 @@ public class StatisticServiceImpl implements StatisticService {
     @Autowired
     DetailOrderRepository detailOrderRepository;
 
-    @Autowired
-    ProductRepository productRepository;
+
 
     @Autowired
     DetailReceiptRepository detailReceiptRepository;
@@ -39,16 +39,15 @@ public class StatisticServiceImpl implements StatisticService {
         if (subDate > 30) {
             return ResponseEntity.ok(new Response(false, "Vui lòng chọn khoảng cách ít hơn 30 ngày"));
         }
-        Date dateStart = new Date(dateStartTime);
-
         List<Integer> revenueList = new ArrayList<>();
         for (int i = 0; i < subDate; i++) {
             Date pre = new Date(dateStartTime);
-            Date next = new Date();
+            Date next;
 
             Calendar c = Calendar.getInstance();
             c.setTime(pre);
-            c.add(Calendar.DATE, i);
+            int index= i;
+            c.add(Calendar.DATE, index-1);
             pre = c.getTime();
 
             c.add(Calendar.DATE, 1);
@@ -68,7 +67,7 @@ public class StatisticServiceImpl implements StatisticService {
             return ResponseEntity.badRequest().body(new Response(false, "Không thể thống kê thời gian trong tương lai"));
         }
 
-        List<Integer> integerList = new ArrayList<>();
+        List<Integer> dataSets = new ArrayList<>();
         Calendar cal = Calendar.getInstance();
 
         int month = 1;
@@ -82,7 +81,6 @@ public class StatisticServiceImpl implements StatisticService {
             Date firstDateOfMonth = new Date(cal.getTimeInMillis());
             cal.set(year, i + 1, 1);
             Date lastDateOfMonth = new Date(cal.getTimeInMillis());
-
             try {
                 Integer sum = invoiceRepository.findAll().stream()
                         .filter(invoice -> invoice.getDateCreated().compareTo(firstDateOfMonth) > 0
@@ -90,12 +88,14 @@ public class StatisticServiceImpl implements StatisticService {
                                 && invoice.getOrderUser().getStatus() != 3)
                         .mapToInt(value -> value.getTotalPrice())
                         .sum();
-                integerList.add(sum);
+                dataSets.add(sum);
+
             } catch (Exception e) {
-                integerList.add(0);
+                dataSets.add(0);
             }
+
         }
-        return ResponseEntity.ok(integerList);
+        return ResponseEntity.ok(dataSets);
     }
 
 
@@ -106,10 +106,24 @@ public class StatisticServiceImpl implements StatisticService {
         if (subDate > 30) {
             return ResponseEntity.ok(new Response(false, "Vui lòng chọn khoảng cách ít hơn 30 ngày"));
         }
-        List<Long> idProductList = detailOrderRepository
-                .findByOrderUser_BookingDateBetweenAndOrderUser_StatusIsLessThanEqual(new Date(dateStartTime), new Date(dateEndTime), 2)
-                .stream().map(value -> value.getId().getProductId())
-                .collect(Collectors.toList());
+        List<Long> idProductList;
+        Date preV = new Date(dateStartTime);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -1);
+        preV = calendar.getTime();
+        if(dateStartTime.equals(dateStartTime)){
+
+            idProductList = detailOrderRepository
+                    .findByOrderUser_BookingDateBetweenAndOrderUser_StatusIsLessThanEqual(preV, new Date(dateEndTime), 2)
+                    .stream().map(value -> value.getId().getProductId())
+                    .collect(Collectors.toList());
+        }
+       else {
+            idProductList = detailOrderRepository
+                    .findByOrderUser_BookingDateBetweenAndOrderUser_StatusIsLessThanEqual(new Date(dateStartTime), new Date(dateEndTime), 2)
+                    .stream().map(value -> value.getId().getProductId())
+                    .collect(Collectors.toList());
+        }
 
         List<AveragePrice> averagePriceList = new ArrayList<>();
         for (Long id : idProductList) {
@@ -130,7 +144,7 @@ public class StatisticServiceImpl implements StatisticService {
 
             Calendar c = Calendar.getInstance();
             c.setTime(pre);
-            c.add(Calendar.DATE, i);
+            c.add(Calendar.DATE, i-1);
             pre = c.getTime();
 
             c.add(Calendar.DATE, 1);
@@ -140,7 +154,7 @@ public class StatisticServiceImpl implements StatisticService {
                     .findByOrderUser_BookingDateBetweenAndOrderUser_StatusIsLessThanEqual(pre, next, 2);
 
             int sumRevenueByDate = 0;
-            //detailOrderList.stream().mapToInt(value -> value.getQuantity()* value.getPrice()).sum();
+
             int sumPriceImport = 0;
             for (DetailOrder detailOrder : detailOrderList) {
                 sumRevenueByDate += detailOrder.getQuantity() * detailOrder.getPrice();
@@ -191,7 +205,10 @@ public class StatisticServiceImpl implements StatisticService {
             averagePrice.setPrice(Float.parseFloat(String.valueOf(sumPrice / sumQuantity)));
             averagePriceList.add(averagePrice);
         }
-
+        for (AveragePrice a: averagePriceList
+             ) {
+            System.out.println(a.getPrice()+" "+a.getId());
+        }
         List<Integer> profitList = new ArrayList<>();
         for (int i = 0; i < month; i++) {
             cal.set(year, i, 1);
@@ -215,6 +232,10 @@ public class StatisticServiceImpl implements StatisticService {
         }
         return ResponseEntity.ok(profitList);
     }
+
+
+
+
 }
 
 
