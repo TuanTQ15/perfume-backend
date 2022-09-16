@@ -31,4 +31,5 @@ public class DetailPromotion {
     private Float percentDiscount;
 
     private Date dateCreated;
+    private Integer disable;
 }

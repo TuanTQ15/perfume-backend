@@ -12,7 +12,10 @@ import java.util.List;
 
 public interface DetailOrderRepository extends JpaRepository<DetailOrder, DetailOrderKey> {
     List<DetailOrder> findByOrderUser_BookingDateBetweenAndOrderUser_StatusIsLessThanEqual(Date bookingDateStart, Date bookingDateEnd, Integer status);
-    @Query(value = "SELECT * FROM detail_order d WHERE  d.product_id = ?1",
+    @Query(value = "SELECT COUNT(*) FROM detail_order d, order_user o\n" +
+            "WHERE  d.product_id =?1 and d.order_id= o.order_id\n" +
+            "and o.booking_date >= ?2 \n" +
+            "and o.booking_date <= ?3 ",
             nativeQuery = true)
-    List<DetailOrder> findDetailOrder(Long id);
+    Integer countNumberDetailOrderByProductId(Long id,Date promotionStart, Date promotionEnd);
 }

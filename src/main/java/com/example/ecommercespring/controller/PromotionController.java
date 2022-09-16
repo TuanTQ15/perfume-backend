@@ -23,10 +23,7 @@ public class PromotionController {
     public List<PromotionDTO> Get(){
         return promotionService.getAll();
     }
-    @GetMapping("/check_delete/{id}")
-    public Response checkForDeleteDetailPromotion(@PathVariable("id") Long productId){
-        return promotionService.checkForDeleteProductInPromotion(productId);
-    }
+
     @GetMapping("/{id}")
     public PromotionDTO Get(@PathVariable("id") Long id){
         return promotionService.getById(id);
@@ -43,10 +40,7 @@ public class PromotionController {
     public Response Put(@RequestBody PromotionDTO promotionDTO){
         return promotionService.modify(promotionDTO);
     }
-    @DeleteMapping("/{id}")
-    public Response Delete(@PathVariable("id") Long id){
-        return promotionService.delete(id);
-    }
+
 
 
 }

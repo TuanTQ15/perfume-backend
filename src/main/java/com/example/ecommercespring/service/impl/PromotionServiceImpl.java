@@ -35,6 +35,21 @@ public class PromotionServiceImpl implements PromotionService {
     @Override
     public PromotionDTO getById(Long id){
         Promotion promotion = promotionRepository.findById(id).orElse(null);
+        for (DetailPromotion detailPromotion: promotion.getDetailPromotionList()) {
+
+            Integer detailOrderCount = detailOrderRepository.
+                    countNumberDetailOrderByProductId(detailPromotion.getProduct().getProductId(),
+                    detailPromotion.getPromotion().getStartDate(),  detailPromotion.getPromotion().getEndDate());
+            if(detailOrderCount != 0){
+                detailPromotion.setDisable(1);
+            }else {
+                detailPromotion.setDisable(0);
+            }
+
+        }
+
+
+
         return new PromotionDTO(promotion);
     }
 
@@ -103,25 +118,7 @@ public class PromotionServiceImpl implements PromotionService {
         return new Response(true, "Sửa đợt khuyến mãi thành công");
     }
 
-    @Override
-    public Response delete(Long id){
-        Promotion promotion = promotionRepository.findById(id).orElse(null);
-        if (promotion == null)
-            return new Response(false, "Đợt khuyến mãi không tồn tại");
-        if(promotion.getDetailPromotionList().size() > 0)
-            return new Response(false, "Đợt khuyến mãi đã có sản phẩm không thế xóa");
 
-        promotionRepository.deleteById(id);
-        return new Response(true, "Xóa đợt khuyến mãi thành công");
-    }
 
-    @Override
-    public Response checkForDeleteProductInPromotion(Long productId) {
-        List<DetailOrder> detailOrder =detailOrderRepository.findDetailOrder(productId);
-        if(detailOrder == null){
-            return new Response(true,"Sản phẩm chưa có đơn đặt hàng bạn có thể xóa");
-        }
 
-        return new Response(false, "Sản phẩm  có đơn đặt hàng bạn không thể xóa");
-    }
 }
